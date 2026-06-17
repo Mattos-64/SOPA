@@ -1,0 +1,50 @@
+﻿@page "/home"
+@using SOPA.Web.Pages
+
+@inherits HomeBase
+
+<div class="container text-center mt-5">
+    <div class="text-center mb-4">
+        <img src="logo.jpg"
+             alt="Logo ONG SOPA"
+             class="img-fluid rounded-circle shadow"
+             style="width: 150px; height: 150px; object-fit: cover; border: 3px solid white;" />
+
+        <h2 class="mt-3 text-black fw-bold">ONG SOPA</h2>
+        <p class="text-opacity-50">Sociedade Protetora dos Animais — Sistema Interno</p>
+    </div>
+
+    <div class="row justify-content-center g-4 mt-2">
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-light text-dark p-3">
+                <div class="card-body text-center">
+                    <i class="bi bi-paw-fill text-warning fs-2 mb-2"></i>
+                    <h6 class="card-title text-muted text-uppercase small fw-bold">Animais Protegidos</h6>
+                    <h2 class="display-6 fw-bold text-dark">@TotalAnimais</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-light text-dark p-3">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill text-info fs-2 mb-2"></i>
+                    <h6 class="card-title text-muted text-uppercase small fw-bold">Voluntários</h6>
+                    <h2 class="display-6 fw-bold text-dark">@TotalVoluntarios</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-light text-dark p-3">
+                <div class="card-body text-center">
+                    <i class="bi bi-cash-coin text-success fs-2 mb-2"></i>
+                    <h6 class="card-title text-muted text-uppercase small fw-bold">Saldo em Caixa</h6>
+                    <h2 class="display-6 fw-bold text-success">R$ @SaldoCaixa.ToString("N2")</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

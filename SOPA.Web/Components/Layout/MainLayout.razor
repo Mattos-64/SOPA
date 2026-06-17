@@ -1,0 +1,22 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <!-- Apenas este pedaço pode ter a checagem se quiser -->
+            <AuthorizeView>
+                <Authorized>
+                    <span>Olá, @context.User.Identity?.Name!</span>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

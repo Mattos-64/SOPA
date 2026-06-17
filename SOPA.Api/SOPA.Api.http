@@ -1,0 +1,6 @@
+@SOPA.Api_HostAddress = http://localhost:5076
+
+GET {{SOPA.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

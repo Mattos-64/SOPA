@@ -1,0 +1,187 @@
+﻿@page "/animais"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@namespace SOPA.Web.Components.Pages
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-dark fw-bold mb-0">
+            <i class="bi bi-list-stars me-2 text-primary"></i>Animais Protegidos
+        </h3>
+        <button class="btn btn-success fw-bold shadow-sm px-3 py-2" @onclick="AbrirModalCadastro">
+            <i class="bi bi-plus-lg me-1"></i>Novo Animal
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0 bg-white bg-opacity-90">
+        <div class="card-body p-4">
+            @if (animais == null)
+            {
+                <div class="d-flex justify-content-center my-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                </div>
+            }
+            else if (!animais.Any())
+            {
+                <div class="alert alert-info text-center fw-medium my-3" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>Nenhum animal cadastrado no momento.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-dark fw-bold">
+                            <tr>
+                                <th scope="col" style="width: 5%">ID</th>
+                                <th scope="col" style="width: 20%">Nome</th>
+                                <th scope="col" style="width: 15%">Espécie</th>
+                                <th scope="col" style="width: 15%">Porte</th>
+                                <th scope="col" style="width: 10%">Idade</th>
+                                <th scope="col" style="width: 20%">Status</th>
+                                <th scope="col" class="text-center" style="width: 15%">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var animal in animais)
+                            {
+                                <tr>
+                                    <td class="fw-bold text-secondary">#@animal.Id</td>
+                                    <td class="fw-semibold text-dark">@animal.Nome</td>
+                                    <td><span class="badge bg-secondary px-2.5 py-1.5 fs-7">@animal.Especie</span></td>
+                                    <td class="text-dark fw-medium">@animal.Porte</td>
+                                    <td class="text-dark">@animal.IdadeAproximada ano(s)</td>
+                                    <td>
+                                        <span class="badge @(animal.Status == "Adotado" ? "bg-success" : animal.Status == "Disponível para Adoção" ? "bg-primary" : "bg-warning text-dark") px-2.5 py-1.5">
+                                            @animal.Status
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button class="btn btn-outline-primary" @onclick="() => EditarAnimal(animal)" title="Editar">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" @onclick="() => ExcluirAnimal(animal.Id)" title="Excluir">
+                                                <i class="bi bi-trash3-fill"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (exibirModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); backdrop-filter: blur(3px);">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title text-dark fw-bold">
+                        <i class="bi @(novoAnimal.Id == 0 ? "bi-plus-circle-fill text-success" : "bi-pencil-square text-primary") me-2"></i>
+                        @(novoAnimal.Id == 0 ? "Cadastrar Novo Animal" : $"Editando Cadastro de {novoAnimal.Nome}")
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="FecharModal"></button>
+                </div>
+
+                <EditForm Model="@novoAnimal" OnSubmit="SalvarAnimal">
+                    <DataAnnotationsValidator />
+                    <div class="modal-body p-4">
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-dark">Nome do Animal</label>
+                                <InputText @bind-Value="novoAnimal.Nome" class="form-control" placeholder="Ex: Bob..." />
+                                <ValidationMessage For="@(() => novoAnimal.Nome)" class="text-danger small" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-dark">Espécie</label>
+                                <InputSelect @bind-Value="especieSelecionada" class="form-control">
+                                    <option value="">Selecione...</option>
+                                    <option value="Cachorro">Cachorro</option>
+                                    <option value="Gato">Gato</option>
+                                    <option value="Pássaro">Pássaro</option>
+                                    <option value="Outros">Outros...</option>
+                                </InputSelect>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-dark">Idade Aproximada</label>
+                                <InputNumber @bind-Value="novoAnimal.IdadeAproximada" class="form-control" placeholder="Em anos" />
+                                <ValidationMessage For="@(() => novoAnimal.IdadeAproximada)" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        @if (especieSelecionada == "Outros")
+                        {
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label fw-semibold text-dark">Especifique a Espécie</label>
+                                    <InputText @bind-Value="especieEspecifica" class="form-control" placeholder="Ex: Coelho, Cavalo..." />
+                                </div>
+                            </div>
+                        }
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-dark">Porte</label>
+                                <InputSelect @bind-Value="novoAnimal.Porte" class="form-control">
+                                    <option value="">Selecione o porte...</option>
+                                    <option value="Mini/Anão">Mini / Anão</option>
+                                    <option value="Pequeno">Pequeno</option>
+                                    <option value="Médio">Médio</option>
+                                    <option value="Grande">Grande</option>
+                                    <option value="Gigante">Gigante</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => novoAnimal.Porte)" class="text-danger small" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-dark">Status do Animal</label>
+                                <InputSelect @bind-Value="novoAnimal.Status" class="form-control">
+                                    <option value="Disponível para Adoção">Disponível para Adoção</option>
+                                    <option value="Em Tratamento Médico">Em Tratamento Médico</option>
+                                    <option value="Adotado">Adotado 🎉</option>
+                                    <option value="Apadrinhado">Apadrinhado</option>
+                                    <option value="Quarentena">Quarentena / Isolamento</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => novoAnimal.Status)" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold text-dark">Link da Foto (Opcional)</label>
+                                <InputText @bind-Value="novoAnimal.FotoUrl" class="form-control" placeholder="http://..." />
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold text-dark">Observações / Histórico</label>
+                                <InputTextArea @bind-Value="novoAnimal.Observacoes" class="form-control" rows="3" placeholder="Fatos relevantes, temperamento, vacinas..." />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary fw-semibold" @onclick="FecharModal">Cancelar</button>
+                        <button type="submit" class="btn btn-success fw-bold shadow-sm px-4">
+                            <i class="bi bi-check-lg me-1"></i>Salvar
+                        </button>
+                    </div>
+                </EditForm>
+
+            </div>
+        </div>
+    </div>
+}

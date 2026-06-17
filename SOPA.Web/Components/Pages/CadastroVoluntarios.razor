@@ -1,0 +1,85 @@
+﻿@page "/registrar"
+@namespace SOPA.Web.Components.Pages
+@layout SOPA.Web.Components.Layout.EmptyLayout
+@attribute [Microsoft.AspNetCore.Authorization.AllowAnonymous]
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh; padding: 20px;">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 500px; border-radius: 15px;">
+        <div class="text-center mb-4">
+            <h2 class="text-primary fw-bold">SOPA</h2>
+            <p class="text-muted">Cadastro de Novos Voluntários</p>
+        </div>
+
+        <EditForm Model="@RegistroModel" OnValidSubmit="HandleCadastro">
+            <DataAnnotationsValidator />
+
+            <!-- Nome Completo -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Nome Completo</label>
+                <InputText @bind-Value="RegistroModel.NomeCompleto" class="form-control" placeholder="Seu nome completo" />
+                <ValidationMessage For="@(() => RegistroModel.NomeCompleto)" class="text-danger small" />
+            </div>
+
+            <!-- E-mail -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">E-mail</label>
+                <InputText @bind-Value="RegistroModel.Email" class="form-control" placeholder="exemplo@sopa.com" />
+                <ValidationMessage For="@(() => RegistroModel.Email)" class="text-danger small" />
+            </div>
+
+            <div class="row">
+                <!-- CPF -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">CPF</label>
+                    <InputText @bind-Value="RegistroModel.CPF" class="form-control" placeholder="000.000.000-00" />
+                    <ValidationMessage For="@(() => RegistroModel.CPF)" class="text-danger small" />
+                </div>
+
+                <!-- Contato 1 -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Contato principal</label>
+                    <InputText @bind-Value="RegistroModel.Contato1" class="form-control" placeholder="(32) 99999-9999" />
+                    <ValidationMessage For="@(() => RegistroModel.Contato1)" class="text-danger small" />
+                </div>
+            </div>
+
+            <!-- Senha -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Senha</label>
+                <InputText @bind-Value="RegistroModel.Senha" type="password" class="form-control" placeholder="******" />
+                <ValidationMessage For="@(() => RegistroModel.Senha)" class="text-danger small" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(MensagemErro))
+            {
+                <div class="alert alert-danger p-2 small text-center" role="alert">
+                    @MensagemErro
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(MensagemSucesso))
+            {
+                <div class="alert alert-success p-2 small text-center" role="alert">
+                    @MensagemSucesso
+                </div>
+            }
+
+            <button type="submit" class="btn btn-primary w-100 fw-bold py-2" disabled="@IsCarregando">
+                @if (IsCarregando)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span> Cadastrando...</span>
+                }
+                else
+                {
+                    <span>Cadastrar</span>
+                }
+            </button>
+        </EditForm>
+
+        <div class="text-center mt-3">
+            <a href="/login" class="small text-decoration-none">Já tem uma conta? Faça login</a>
+        </div>
+    </div>
+</div>
